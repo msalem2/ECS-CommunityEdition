@@ -273,28 +273,28 @@ def prepare_data_disk_func(disks):
             disk_path = "/dev/{}".format(disk)
 
             logger.info("Partitioning the disk '{}'".format(disk_path))
-            ps = subprocess.Popen(["echo", "-e", "\"o\nn\np\n1\n\n\nw\""], stdout=subprocess.PIPE)
-            output = subprocess.check_output(["fdisk", disk_path], stdin=ps.stdout)
+            ps = subprocess.Popen(["/sbin/echo", "-e", "\"o\nn\np\n1\n\n\nw\""], stdout=subprocess.PIPE)
+            output = subprocess.check_output(["/sbin/fdisk", disk_path], stdin=ps.stdout)
             ps.wait()
             # os.system("echo -e o\nn\np\n1\n\n\nw | fdisk /dev/sdc")
 
             device_name = disk_path + "1"
             # Make File Filesystem in attached Volume
             logger.info("Make File filesystem in '{}'".format(device_name))
-            subprocess.call(["mkfs.xfs", "-f", device_name])
+            subprocess.call(["/sbin/mkfs.xfs", "-f", device_name])
 
             uuid_name = uuid_filename(device_name)
             # mkdir -p /ecs/uuid-[uuid]
             logger.info("Make /ecs/{} Directory in attached Volume".format(uuid_name))
-            subprocess.call(["mkdir", "-p", "/ecs/{}".format(uuid_name)])
+            subprocess.call(["/sbin/mkdir", "-p", "/ecs/{}".format(uuid_name)])
 
             # mount /dev/sdc1 /ecs/uuid-[uuid]
             logger.info("Mount attached {} to /ecs/{} volume.".format(device_name, uuid_name))
-            subprocess.call(["mount", device_name, "/ecs/{}".format(uuid_name), "-o", "noatime,seclabel,attr2,inode64,noquota"])
+            subprocess.call(["/sbin/mount", device_name, "/ecs/{}".format(uuid_name), "-o", "noatime,seclabel,attr2,inode64,noquota"])
 
             # add entry to fstab if not pre-existing
             fstab = "/etc/fstab"
-            p = subprocess.Popen(["grep", device_name, fstab], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = subprocess.Popen(["/bin/grep", device_name, fstab], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = p.communicate()
             if p.returncode == 0:
                 logger.info("Data disk already entered in fs table")
@@ -310,7 +310,7 @@ def prepare_data_disk_func(disks):
         sys.exit()
 
 def uuid_filename(device_name):
-    blkd_id_process = subprocess.Popen(["blkid", "-s", "UUID", "-o", "value", device_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    blkd_id_process = subprocess.Popen(["/sbin/blkid", "-s", "UUID", "-o", "value", device_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = blkd_id_process.communicate()
     return "uuid-{}".format(stdout.strip())
 
