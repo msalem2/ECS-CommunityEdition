@@ -273,7 +273,7 @@ def prepare_data_disk_func(disks):
             disk_path = "/dev/{}".format(disk)
 
             logger.info("Partitioning the disk '{}'".format(disk_path))
-            ps = subprocess.Popen(["/sbin/echo", "-e", "\"o\nn\np\n1\n\n\nw\""], stdout=subprocess.PIPE)
+            ps = subprocess.Popen(["echo", "-e", "\"o\nn\np\n1\n\n\nw\""], stdout=subprocess.PIPE)
             output = subprocess.check_output(["/sbin/fdisk", disk_path], stdin=ps.stdout)
             ps.wait()
             # os.system("echo -e o\nn\np\n1\n\n\nw | fdisk /dev/sdc")
