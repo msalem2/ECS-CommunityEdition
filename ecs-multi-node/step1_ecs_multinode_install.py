@@ -144,7 +144,7 @@ def docker_pull_func(docker_image_name,proxy=None):
         
     
         #Start docker service
-         os.system("service docker start")
+        os.system("service docker start")
 
         docker = "docker"
         docker_arg = "pull"
