@@ -75,7 +75,7 @@ def update_selinux_os_configuration():
     """
 
     logger.info("Updating SELinux to Permissive mode.")
-    subprocess.call(["setenforce", "0"])
+    os.system("sudo setenforce 0")
 
 
 
@@ -168,7 +168,7 @@ def network_file_func(ethadapter):
     try:
 
         # Get the IP address
-        ip_address = subprocess.check_output(['hostname', '-i']).rstrip('\r\n')
+        ip_address = socket.gethostbyname(socket.gethostname())
 
         # Get the hostname
         hostname = subprocess.check_output(['hostname']).rstrip('\r\n')
